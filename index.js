@@ -2,7 +2,20 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ]
+    }
 });
 
 client.on('qr', qr => {
@@ -11,17 +24,15 @@ client.on('qr', qr => {
 
 client.on('ready', () => {
     console.log('🤖 Bot conectado y listo');
-});  
-
+});
 
 client.on('message', msg => {
     console.log('📌 Tu ID es:', msg.author || msg.from);
 });
 
-
 const manualAdmins = [
-    '102370629443806@lid',   //Angel 
-    '198036949057568@lid'  // Jhonel
+    '102370629443806@lid',   // Ángel
+    '198036949057568@lid'    // Jhonel
 ];
 
 client.on('message', async msg => {
@@ -34,8 +45,6 @@ client.on('message', async msg => {
         }
 
         const authorId = msg.author || msg.from;
-
-        // Verificar si el autor está en la lista manual o es admin real
         const sender = chat.participants.find(p => p.id._serialized === authorId);
         const isAdmin = manualAdmins.includes(authorId) || (sender && (sender.isAdmin || sender.isSuperAdmin));
 
@@ -60,5 +69,7 @@ client.on('message', async msg => {
     }
 });
 
-
 client.initialize();
+
+// Evita que Railway cierre el proceso
+process.stdin.resume();
