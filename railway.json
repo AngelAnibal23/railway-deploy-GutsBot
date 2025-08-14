@@ -1,0 +1,11 @@
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@railway/app-runner:node"
+    }
+  ],
+  "deploy": {
+    "startCommand": "npm start"
+  }
+}
